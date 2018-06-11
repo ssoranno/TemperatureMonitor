@@ -55,6 +55,7 @@ class ViewController: UIViewController {
         //performSelector(onMainThread: #selector(CheckTemp), with: temp, waitUntilDone: false)
     }*/
     
+    // Comment for git
     @objc func updateTemp()->Void{
         let urlString = "http://192.168.1.97"
         var temp:Int = 0
