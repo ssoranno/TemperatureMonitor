@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        //UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {didAllow, error in})
+        
         UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
         return true
     }
@@ -36,16 +36,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 do{
                     let contents = try String(contentsOf: url!)
                     temp = (vc?.getTemp(contents: contents))!
+                    DispatchQueue.main.async {
+                        vc?.temperature = temp
+                        vc?.CheckTemp(temp: (vc?.temperature)!)
+                    }
                     completionHandler(.newData)
                 } catch {
                     print("contents could not be loaded")
                     err = "Error: Server could be down"
+                    DispatchQueue.main.async {
+                        vc?.er = err
+                    }
                     completionHandler(.failed)
-                }
-                DispatchQueue.main.async {
-                    vc?.temperature = temp
-                    vc?.er = err
-                    vc?.CheckTemp(temp: (vc?.temperature)!)
                 }
             }
         }

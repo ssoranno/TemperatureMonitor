@@ -42,20 +42,7 @@ class ViewController: UIViewController {
         
         timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(self.updateTemp), userInfo: nil, repeats: true)
         
-        //performSelector(inBackground: #selector(updateTemp), with: nil)
-        //performSelector(onMainThread: #selector(CheckTemp), with: nil, waitUntilDone: true)
-        //updateTemp()
-        /*let task = URLSession.shared.dataTask(with: url, completionHandler: {(data, response,error) in
-            let dataStr = NSString(data:data!, encoding:String.Encoding.utf8.rawValue) as! String
-            print(dataStr)
-        })
-        task.resume()*/
     }
-    
-    /*@objc func runProcess()->Void {
-        performSelector(inBackground: #selector(updateTemp), with: nil)
-        //performSelector(onMainThread: #selector(CheckTemp), with: temp, waitUntilDone: false)
-    }*/
     
     // Comment for git
     @objc func updateTemp()->Void{
@@ -68,14 +55,16 @@ class ViewController: UIViewController {
             do{
                 let contents = try String(contentsOf: url!)
                 temp = (self?.getTemp(contents: contents))!
+                DispatchQueue.main.async {
+                    self?.temperature = temp
+                    self?.CheckTemp(temp: (self?.temperature)!)
+                }
             } catch {
                 print("contents could not be loaded")
                 err = "Error: Server could be down"
-            }
-            DispatchQueue.main.async {
-                self?.temperature = temp
-                self?.er = err
-                self?.CheckTemp(temp: (self?.temperature)!)
+                DispatchQueue.main.async {
+                    self?.er = err
+                }
             }
         }
     }
