@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 class ViewController: UIViewController {
     
@@ -35,6 +36,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         temperature = 0
         er = ""
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {didAllow, error in})
         
         updateTemp()
         
@@ -57,6 +59,7 @@ class ViewController: UIViewController {
     
     // Comment for git
     @objc func updateTemp()->Void{
+        print("updated Temp")
         let urlString = "http://192.168.1.97"
         var temp:Int = 0
         var err = ""
@@ -64,29 +67,7 @@ class ViewController: UIViewController {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             do{
                 let contents = try String(contentsOf: url!)
-                let l = contents.count-2
-                var index1 = 0
-                var index2 = 0
-                for i in 0...l{
-                    let num = contents.index(contents.startIndex, offsetBy: i)
-                    let num2 = contents.index(contents.startIndex, offsetBy: i+1)
-                    if(contents[num] == "e" && contents[num2] == ":"){
-                        index1 = i+14
-                    }
-                }
-                for i in index1...l+1 {
-                    let num = contents.index(contents.startIndex, offsetBy: i)
-                    if(contents[num] == "\0"){
-                        index2 = i
-                        break
-                    }
-                }
-                let start = contents.index(contents.startIndex, offsetBy: index1)
-                let end = contents.index(contents.startIndex, offsetBy: index2)
-                let range = start..<end
-                let substr = contents[range]
-                temp = Int(String(substr))!
-                //return temp
+                temp = (self?.getTemp(contents: contents))!
             } catch {
                 print("contents could not be loaded")
                 err = "Error: Server could be down"
@@ -99,11 +80,45 @@ class ViewController: UIViewController {
         }
     }
     
+    func getTemp(contents:String)->Int{
+        let l = contents.count-2
+        var index1 = 0
+        var index2 = 0
+        for i in 0...l{
+            let num = contents.index(contents.startIndex, offsetBy: i)
+            let num2 = contents.index(contents.startIndex, offsetBy: i+1)
+            if(contents[num] == "e" && contents[num2] == ":"){
+                index1 = i+14
+            }
+        }
+        for i in index1...l+1 {
+            let num = contents.index(contents.startIndex, offsetBy: i)
+            if(contents[num] == "\0"){
+                index2 = i
+                break
+            }
+        }
+        let start = contents.index(contents.startIndex, offsetBy: index1)
+        let end = contents.index(contents.startIndex, offsetBy: index2)
+        let range = start..<end
+        let substr = contents[range]
+        return Int(String(substr))!
+    }
+    
     func CheckTemp(temp:Int)->Void {
+        let content = UNMutableNotificationContent()
+        content.title = "Temperature Out of Range"
+        content.body = "Temperature: \(temperature)"
+        content.badge = 1
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         if(temperature < 67){
             self.view.backgroundColor = UIColor.blue
+            let request = UNNotificationRequest(identifier: "TooCold", content: content, trigger: trigger)
+            UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
         } else if(temperature > 75){
             self.view.backgroundColor = UIColor.red
+            let request = UNNotificationRequest(identifier: "TooHot", content: content, trigger: trigger)
+            UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
         } else{
             self.view.backgroundColor = UIColor.green
         }

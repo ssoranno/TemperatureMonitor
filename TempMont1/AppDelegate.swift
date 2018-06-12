@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,7 +17,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        //UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {didAllow, error in})
+        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
         return true
+    }
+    
+    func application(_ application: UIApplication,
+                     performFetchWithCompletionHandler completionHandler:
+        @escaping (UIBackgroundFetchResult) -> Void) {
+        // Check for new data.
+        if let vc = window?.rootViewController as? ViewController {
+            print("wft")
+            let urlString = "http://192.168.1.97"
+            var temp:Int = 0
+            var err = ""
+            let url = URL(string:urlString)
+            DispatchQueue.global(qos: .userInitiated).async { [weak vc] in
+                do{
+                    let contents = try String(contentsOf: url!)
+                    temp = (vc?.getTemp(contents: contents))!
+                    completionHandler(.newData)
+                } catch {
+                    print("contents could not be loaded")
+                    err = "Error: Server could be down"
+                    completionHandler(.failed)
+                }
+                DispatchQueue.main.async {
+                    vc?.temperature = temp
+                    vc?.er = err
+                    vc?.CheckTemp(temp: (vc?.temperature)!)
+                }
+            }
+        }
+        print("wft2")
+        completionHandler(.noData)
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
