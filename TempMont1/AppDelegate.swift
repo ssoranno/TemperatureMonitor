@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      performFetchWithCompletionHandler completionHandler:
         @escaping (UIBackgroundFetchResult) -> Void) {
         // Check for new data.
-        if let vc = window?.rootViewController as? ViewController {
+        if let vc = window?.rootViewController as? MainViewController {
             print("wft")
             let urlString = "http://192.168.1.97"
             var temp:Int = 0
@@ -39,6 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     DispatchQueue.main.async {
                         vc?.temperature = temp
                         vc?.CheckTemp(temp: (vc?.temperature)!)
+                        vc?.er = ""
                     }
                     completionHandler(.newData)
                 } catch {

@@ -9,7 +9,7 @@
 import UIKit
 import UserNotifications
 
-class ViewController: UIViewController {
+class MainViewController: UIViewController {
     
     @IBOutlet weak var DegreesLabel: UILabel!
     
@@ -26,6 +26,7 @@ class ViewController: UIViewController {
     
     var er = ""{
         didSet{
+            ErrorWarning.textColor = UIColor.red
             ErrorWarning.text = er
         }
     }
@@ -58,6 +59,7 @@ class ViewController: UIViewController {
                 DispatchQueue.main.async {
                     self?.temperature = temp
                     self?.CheckTemp(temp: (self?.temperature)!)
+                    self?.er = ""
                 }
             } catch {
                 print("contents could not be loaded")
