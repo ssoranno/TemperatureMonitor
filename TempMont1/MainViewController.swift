@@ -31,6 +31,10 @@ class MainViewController: UIViewController {
         }
     }
     
+    var serverURL = "http://192.168.1.97"
+    var greatestTemp = 75
+    var leastTemp = 67
+    
     var timer = Timer()
     
     override func viewDidLoad() {
@@ -39,6 +43,10 @@ class MainViewController: UIViewController {
         er = ""
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {didAllow, error in})
         
+        NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: "URLName"), object: nil, queue: OperationQueue.main) { (notification) in
+            let settingCon = notification.object as! SettingsViewController
+            self.serverURL = settingCon.SURL.text!
+        }
         updateTemp()
         
         timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(self.updateTemp), userInfo: nil, repeats: true)
@@ -48,10 +56,11 @@ class MainViewController: UIViewController {
     // Comment for git
     @objc func updateTemp()->Void{
         print("updated Temp")
-        let urlString = "http://192.168.1.97"
+        print("sURL: \(serverURL)")
+        //let urlString = "http://192.168.1.97"
         var temp:Int = 0
         var err = ""
-        let url = URL(string:urlString)
+        let url = URL(string:serverURL)
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             do{
                 let contents = try String(contentsOf: url!)
@@ -102,11 +111,11 @@ class MainViewController: UIViewController {
         content.body = "Temperature: \(temperature)"
         content.badge = 1
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-        if(temperature < 67){
+        if(temperature < leastTemp){
             self.view.backgroundColor = UIColor.blue
             let request = UNNotificationRequest(identifier: "TooCold", content: content, trigger: trigger)
             UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-        } else if(temperature > 75){
+        } else if(temperature > greatestTemp){
             self.view.backgroundColor = UIColor.red
             let request = UNNotificationRequest(identifier: "TooHot", content: content, trigger: trigger)
             UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)

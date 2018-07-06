@@ -28,10 +28,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Check for new data.
         if let vc = window?.rootViewController as? MainViewController {
             print("wft")
-            let urlString = "http://192.168.1.97"
+            //let urlString = "http://192.168.1.97"
             var temp:Int = 0
             var err = ""
-            let url = URL(string:urlString)
+            let url = URL(string:vc.serverURL)
             DispatchQueue.global(qos: .userInitiated).async { [weak vc] in
                 do{
                     let contents = try String(contentsOf: url!)
