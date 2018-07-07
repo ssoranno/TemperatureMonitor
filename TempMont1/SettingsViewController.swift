@@ -10,7 +10,7 @@ import UIKit
 
 class SettingsViewController: UIViewController {
     
-    var controller: MainViewController? = nil
+    //var controller: MainViewController? = nil
     
     @IBOutlet weak var SURL: UITextField!
     
@@ -35,6 +35,8 @@ class SettingsViewController: UIViewController {
         //let vc = window?.rootViewController as? MainViewController
         //vc?.greatestTemp = Int(GreatestTemp.text!)!
         //vc?.leastTemp = Int(LeastTemp.text!)!
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "greatestTemp"), object: self)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "leastTemp"), object: self)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,14 +54,14 @@ class SettingsViewController: UIViewController {
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? MainViewController{
             print("omg")
             vc.serverURL = SURL.text!
         }
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-    }
+    }*/
     
 
 }

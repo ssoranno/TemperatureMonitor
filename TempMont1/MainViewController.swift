@@ -31,9 +31,14 @@ class MainViewController: UIViewController {
         }
     }
     
-    var serverURL = "http://192.168.1.97"
+    let defaults = UserDefaults.standard
+    
+    /*var serverURL = "http://192.168.1.97"
     var greatestTemp = 75
     var leastTemp = 67
+    */
+    
+    //let serverURL = defaults.objec
     
     var timer = Timer()
     
@@ -42,11 +47,24 @@ class MainViewController: UIViewController {
         temperature = 0
         er = ""
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {didAllow, error in})
-        
+        //UIApplication.shared.applicationIconBadgeNumber = 0
+        //print("hello")
         NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: "URLName"), object: nil, queue: OperationQueue.main) { (notification) in
             let settingCon = notification.object as! SettingsViewController
             self.serverURL = settingCon.SURL.text!
         }
+        
+        NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: "greatestTemp"), object: nil, queue: OperationQueue.main) { (notification) in
+            let settingCon = notification.object as! SettingsViewController
+            self.greatestTemp = Int(settingCon.GreatestTemp.text!)!
+        }
+        
+        NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: "leastTemp"), object: nil, queue: OperationQueue.main) { (notification) in
+            let settingCon = notification.object as! SettingsViewController
+            self.leastTemp = Int(settingCon.LeastTemp.text!)!
+        }
+        
+        
         updateTemp()
         
         timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(self.updateTemp), userInfo: nil, repeats: true)
@@ -75,6 +93,7 @@ class MainViewController: UIViewController {
                 err = "Error: Server could be down"
                 DispatchQueue.main.async {
                     self?.er = err
+                    self?.view.backgroundColor = UIColor.lightGray
                 }
             }
         }
