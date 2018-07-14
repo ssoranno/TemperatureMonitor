@@ -37,7 +37,9 @@ class MainViewController: UIViewController {
     var greatestTemp = 75
     var leastTemp = 67
     */
-    
+    var serverURL = "http://192.168.1.97"
+    var greatestTemp = 75
+    var leastTemp = 67
     //let serverURL = defaults.objec
     
     var timer = Timer()

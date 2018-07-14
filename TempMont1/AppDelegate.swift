@@ -8,6 +8,7 @@
 
 import UIKit
 import UserNotifications
+import SystemConfiguration.CaptiveNetwork
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,8 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
-        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
+        if(getWiFiSsid() == "ournetwork"){
+            UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
+        }
         return true
     }
     
@@ -53,6 +55,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         print("wft2")
         completionHandler(.noData)
+    }
+    
+    func getWiFiSsid() -> String? {
+        var ssid: String?
+        if let interfaces = CNCopySupportedInterfaces() as NSArray? {
+            for interface in interfaces {
+                if let interfaceInfo = CNCopyCurrentNetworkInfo(interface as! CFString) as NSDictionary? {
+                    ssid = interfaceInfo[kCNNetworkInfoKeySSID as String] as? String
+                    break
+                }
+            }
+        }
+        return ssid
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
